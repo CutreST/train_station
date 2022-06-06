@@ -1,12 +1,13 @@
 
 using System;
+using System.Text;
 
 // usamos el namespace de godot y así sólo tenemos que meter Console.Write -> etc;
 namespace Godot
 {
 
     public static class MyConsole
-    {   
+    {
         /// <summary>
         /// is the console on?
         /// </summary>
@@ -22,6 +23,11 @@ namespace Godot
         /// Reference to the <see cref="ConsoleUI">
         /// </summary>
         private static ConsoleUI _console;
+
+        private const string PREF_ERROR = "***ERROR: ";
+        private const string PREF_OJU = "***OJU: ";
+
+        private static StringBuilder _messBuilder;
 
         public static bool IsOn
         {
@@ -81,6 +87,7 @@ namespace Godot
         /// <param name="message">the message to be written</param>
         public static void WriteWarning(in string message)
         {
+            string finalMess = String.Concat(PREF_ERROR, message);
             GD.PushWarning(message);
 
             if (_isOn)
@@ -97,11 +104,15 @@ namespace Godot
         /// <param name="message">the message to be written</param>
         public static void WriteError(in string message)
         {
-            GD.PrintErr(message);
+            _messBuilder.Clear();
+            _messBuilder.Append(PREF_ERROR);
+            _messBuilder.Append(message);
+
+            GD.PrintErr(_messBuilder.ToString());
 
             if (_isOn)
             {
-                _console.WriteErrorMessage(message);
+                _console.WriteErrorMessage(_messBuilder.ToString());
             }
         }
 
@@ -117,6 +128,7 @@ namespace Godot
             GD.Print(_console);
             MySystems.SystemManager.GetInstance(_console).NodeManager.CallDeferred("add_child", _console);
             _console.Init();
+            _messBuilder = new StringBuilder();
         }
 
         /// <summary>
@@ -128,6 +140,7 @@ namespace Godot
             {
                 _console.Dispose();
                 _console = null;
+                _messBuilder = null;
             }
             catch (Exception e)
             {

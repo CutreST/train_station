@@ -88,7 +88,7 @@ namespace Entities
                 child = root.GetChild(i);
                 componentNode = child as IComponentNode;
 
-                if(child != null){
+                if(componentNode != null){
                     this.TryAddIComponentNode(componentNode);
                 }
 

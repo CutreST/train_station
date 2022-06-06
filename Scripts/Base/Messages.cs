@@ -27,7 +27,7 @@ public static class Messages
         switch (mesType)
         {
             case MessageType.ERROR:
-                GD.PrintErr(String.Concat(PREF_ERROR, message));
+                MyConsole.WriteError(message);
                 break;
 
             case MessageType.LOG:
