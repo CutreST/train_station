@@ -12,7 +12,7 @@ public static class Messages
     /// <summary>
     /// The type of message desired
     /// </summary>
-    public enum MessageType : byte { LOG, ERROR}
+    public enum MessageType : byte { LOG, ERROR, WARNING}
 
     private static string NODE_SAY_FORMAT = "[{0} says]:";
     private static string PREF_ERROR = "***ERROR: ";
@@ -22,19 +22,21 @@ public static class Messages
     /// </summary>
     /// <param name="message">Message to be printed</param>
     /// <param name="mesType">Type of message</param>
-    public static void Print(in string message, in MessageType mesType = MessageType.LOG)
+    public static void Print(in string message, in MessageType mesType = MessageType.LOG) 
     {
-        switch (mesType)
-        {
+        switch(mesType){
+            case MessageType.LOG:
+                MyConsole.Write(message);
+                break;
+            case MessageType.WARNING:
+                MyConsole.WriteWarning(message);
+                break;
             case MessageType.ERROR:
                 MyConsole.WriteError(message);
                 break;
-
-            case MessageType.LOG:
-                GD.PrintErr(String.Concat(PREF_OJU, message));
-                break;
         }
     }
+
 
     public static void Print(in string name, in string message, in MessageType mesType = MessageType.LOG){
         

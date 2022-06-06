@@ -35,7 +35,7 @@ namespace Godot
         /// The time between <see cref="_toWrite"/> enqueess
         /// </summary>
         [Export]
-        private readonly float DISPLAY_TIME = 0.1f;
+        private readonly float DISPLAY_TIME = 0.0f;
 
         /// <summary>
         /// Font of the label, is an overrride
@@ -118,7 +118,7 @@ namespace Godot
 
             if (_textHolder != null)
             {
-                Messages.Print("Text holder found!!!");
+                GD.Print("Text holder found!!!");
             }
 
             this.LabelListsInit();
