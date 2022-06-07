@@ -1,10 +1,12 @@
 using Godot;
 using MySystems;
 using System;
+using Base.Interfaces;
+using MySystems.Inputs;
 
 namespace Entities.Components
 {
-    public sealed class MovementComponent : KinematicBody2D, IComponentNode
+    public sealed class MovementComponent : KinematicBody2D, IComponentNode, IPhysic
     {
         [Export]
         public Vector2 Speed{ get; private set; }
@@ -18,7 +20,8 @@ namespace Entities.Components
         public Entity MyEntity { get; set; }
         private Vector2 _direction;
 
-        // referencia al movement system
+        // borrar, sólo test
+        private InputInGame input;
 
         #region Godot methods
         public override void _EnterTree()
@@ -34,23 +37,15 @@ namespace Entities.Components
         }
 
         public override void _PhysicsProcess(float delta){
-            _direction = new Vector2();
-            if(Input.IsActionPressed("ui_up")){
-                _direction.y = -1;
-            }else if(Input.IsActionPressed("ui_down")){
-                _direction.y = 1;
+            try{
+                input.GetInputs();
+                if(input.IsMovement){
+                    Messages.Print(input.Direction.ToString());
+                    base.MoveAndSlide(Speed * input.Direction.Normalized());
+                }
+            }catch(NullReferenceException e){
+                Messages.Print(e.Message, Messages.MessageType.ERROR);
             }
-
-            if(Input.IsActionPressed("ui_left")){
-                _direction.x = -1;
-            }else if(Input.IsActionPressed("ui_right")){
-                _direction.x = 1;
-            }
-
-            _velocity = this.Speed * _direction.Normalized();
-            base.Position += _velocity;
-
-            base.MoveAndSlide(_velocity, _direction.Normalized());        
         }
 
         #endregion
@@ -62,7 +57,14 @@ namespace Entities.Components
 
         public void OnAwake()
         {
-            
+            InGameSystem game = new InGameSystem();
+            SystemManager manager = SystemManager.GetInstance(this);
+
+            if(manager.TryAddSystem(game) == false){
+                Messages.Print("Error", Messages.MessageType.ERROR);
+            }
+            manager.AddToStack(game);
+            input = game.Input;
         }
 
         public void OnSetFree()
@@ -82,6 +84,11 @@ namespace Entities.Components
         }
 
         public void Reset()
+        {
+            
+        }
+
+        public void MyPhysic(in float delta)
         {
             
         }
