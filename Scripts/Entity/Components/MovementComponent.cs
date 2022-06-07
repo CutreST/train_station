@@ -39,8 +39,18 @@ namespace Entities.Components
         public override void _PhysicsProcess(float delta){
             try{
                 input.GetInputs();
+
+                // checkeamos la mierda de accion, algo básico
+                if(input.IsAction){
+                    CollisionShape2D shape = new CollisionShape2D();
+                    // luego lo hago, no sé si usar unos cuantos raycast y ale, acabamos antes
+                    // bien, esto va con nodos, así que sólo usaremos uno y a partir de allí daremos las
+                    // vueltas, no?
+                    // sí, podría hacerlo con 20 de ellos, pero no tiene sentido, seria más fácil, eso sí.
+                    
+                }
                 if(input.IsMovement){
-                    Messages.Print(input.Direction.ToString());
+                    //Messages.Print(input.Direction.ToString());
                     base.MoveAndSlide(Speed * input.Direction.Normalized());
                 }
             }catch(NullReferenceException e){
