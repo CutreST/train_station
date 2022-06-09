@@ -8,7 +8,7 @@ namespace Entities.Components
         // para esto miraremos el hijo para el tipo de acción. Si queremos algo 
         // super-chungo, podemos meter un super behaviour tree
 
-        public void DoAction(){
+        public void DoAction(in Entity entity){
             Messages.Print("Action Done!");
         }
 

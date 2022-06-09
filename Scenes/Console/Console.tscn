@@ -53,24 +53,24 @@ __meta__ = {
 }
 
 [node name="Panel" type="Panel" parent="CanvasLayer2"]
-self_modulate = Color( 1, 1, 1, 0.254902 )
-margin_left = 712.0
+self_modulate = Color( 1, 1, 1, 0.65098 )
+margin_left = 584.0
 margin_top = 8.0
-margin_right = 1008.0
-margin_bottom = 208.0
+margin_right = 1011.0
+margin_bottom = 312.0
 custom_styles/panel = SubResource( 2 )
 
 [node name="StaticControl" type="Control" parent="CanvasLayer2/Panel"]
 margin_left = 8.0
 margin_top = 8.0
-margin_right = 392.0
-margin_bottom = 192.0
+margin_right = 416.0
+margin_bottom = 296.0
 
 [node name="TextHolder" type="VBoxContainer" parent="CanvasLayer2/Panel"]
 margin_left = 8.0
 margin_top = 8.0
-margin_right = 392.0
-margin_bottom = 192.0
+margin_right = 416.0
+margin_bottom = 296.0
 rect_clip_content = true
 input_pass_on_modal_close_click = false
 __meta__ = {

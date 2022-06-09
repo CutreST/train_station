@@ -41,13 +41,15 @@ namespace Entities.Components
                 input.GetInputs();
 
                 // checkeamos la mierda de accion, algo básico
+                // vale, hemos hecho una area 2d, sólo para probar
+                // con raycast sería mejor, pero creo que será más sencillo así, no?
                 if(input.IsAction){
-                    CollisionShape2D shape = new CollisionShape2D();
-                    // luego lo hago, no sé si usar unos cuantos raycast y ale, acabamos antes
-                    // bien, esto va con nodos, así que sólo usaremos uno y a partir de allí daremos las
-                    // vueltas, no?
-                    // sí, podría hacerlo con 20 de ellos, pero no tiene sentido, seria más fácil, eso sí.
-                    
+                    ActionDoerComponent act = this.MyEntity.TryGetFromChild_Rec<ActionDoerComponent>();
+
+                    if(act != null){
+                        act.DoAction();
+                    }
+
                 }
                 if(input.IsMovement){
                     //Messages.Print(input.Direction.ToString());
