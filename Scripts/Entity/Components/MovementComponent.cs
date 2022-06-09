@@ -12,6 +12,9 @@ namespace Entities.Components
         [Export]
         public Vector2 Speed { get; private set; }
 
+        [Export]
+        private bool connectToOnMove;
+
         private Vector2 _velocity;
 
         public Vector2 Acceleration { get; set; }
@@ -21,8 +24,7 @@ namespace Entities.Components
         public Entity MyEntity { get; set; }
         private Vector2 _direction;
 
-        // borrar, sólo test
-        private InputInGame input;
+        
 
         #region Godot methods
         public override void _EnterTree()
@@ -31,56 +33,43 @@ namespace Entities.Components
 
         }
 
+        public override void _Ready()
+        {
+            this.OnStart();
+        }
+
 
         public override void _ExitTree()
         {
             this.OnSetFree();
         }
-
-        public override void _PhysicsProcess(float delta)
-        {
-            try
-            {
-                input.GetInputs();
-
-                // checkeamos la mierda de accion, algo básico
-                // vale, hemos hecho una area 2d, sólo para probar
-                // con raycast sería mejor, pero creo que será más sencillo así, no?
-                if (input.IsAction)
-                {
-                    ActionDoerComponent act = this.MyEntity.TryGetFromChild_Rec<ActionDoerComponent>();
-                    if (act != null)
-                    {
-                        act.DoAction();
-                    }
-
-                }
-                if (input.IsMovement)
-                {
-                    //Messages.Print(input.Direction.ToString());
-                    base.MoveAndSlide(Speed * input.Direction.Normalized());
-
-                    MoveState st;
-
-                    if (this.MyEntity.TryGetIComponentNode<MoveState>(out st) == false)
-                    {
-                        Messages.Print("Move State Not Found for " + this.MyEntity.Name, Messages.MessageType.ERROR);
-                        return;
-                    }
-
-                    st.Move(input.Direction);
-                }
-            }
-            catch (NullReferenceException e)
-            {
-                Messages.Print(e.Message, Messages.MessageType.ERROR);
-            }
-        }
-
         #endregion
 
+        private void SubscribeToOnMove()
+        {
+            MoveState m;
+            if(this.MyEntity.TryGetIComponentNode<MoveState>(out m) == false){
+                Messages.Print("MoveState not found on " + base.Name, Messages.MessageType.ERROR);
+                connectToOnMove = false;
+                return;
+            }
+            m.SubscribeToOnMove(this.Move);
+        }
 
+        private void UnsubscribeToOnMove()
+        {
+            MoveState m;
+            if(this.MyEntity.TryGetIComponentNode<MoveState>(out m) == false){
+                Messages.Print("MoveState not found on " + base.Name, Messages.MessageType.ERROR);
+                connectToOnMove = false;
+                return;
+            }
+            m.UnsubscribeToOnMove(this.Move);
+        }
 
+        private void Move(Vector2 direction){
+            base.MoveAndSlide(Speed * direction);
+        }
 
         #region IComponent
 
@@ -94,24 +83,24 @@ namespace Entities.Components
                 Messages.Print("Error", Messages.MessageType.ERROR);
             }
             manager.AddToStack(game);
-            input = game.Input;
         }
 
         public void OnSetFree()
         {
             this.MyEntity = null;
 
+            if(connectToOnMove){
+                this.UnsubscribeToOnMove();
+            }
+
         }
 
         public void OnStart()
         {
-            MovementSystem temp;
-
-            if (SystemManager.GetInstance(this).TryGetSystem<MovementSystem>(out temp, true))
-            {
-                Messages.Print("test para probar");
-                Messages.Print("test para probar error", Messages.MessageType.ERROR);
+            if(connectToOnMove){
+                this.SubscribeToOnMove();
             }
+
         }
 
         public void Reset()

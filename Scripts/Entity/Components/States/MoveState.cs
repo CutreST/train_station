@@ -23,9 +23,16 @@ namespace Entities.Components.States
         private Direction _currentDirection = Direction.RIGHT;
 
         HashSet<Action<Direction>> changeDirectionsList = new HashSet<Action<Direction>>();
+        HashSet<Action<Vector2>> moveList = new HashSet<Action<Vector2>>();
+
+        public override void _ExitTree()
+        {
+            this.OnSetFree();
+        }
 
         public void Move(Vector2 direction)
         {
+            this.OnMove(direction);
             this.ChangeDirection(direction);
         }
 
@@ -67,13 +74,27 @@ namespace Entities.Components.States
             }
         }
 
+        public void SubscribeToOnMove(Action<Vector2> function){
+            if(this.moveList.Contains(function) == false){
+                this.moveList.Add(function);
+            }
+        }
+
+        public void UnsubscribeToOnMove(Action<Vector2> function){
+            if(this.moveList.Contains(function)){
+                this.moveList.Remove(function);
+            }
+        }
+
         #endregion
 
 
         #region launchers
-        private void OnMove()
+        private void OnMove(Vector2 direction)
         {
-
+            foreach(Action<Vector2> move in moveList){
+                move.Invoke(direction);
+            }
         }
 
         private void OnChangeDirection()
@@ -91,7 +112,10 @@ namespace Entities.Components.States
 
         public void OnSetFree()
         {
-
+            changeDirectionsList.Clear();
+            changeDirectionsList = null;
+            moveList.Clear();
+            moveList = null;
         }
 
         public void OnStart()

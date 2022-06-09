@@ -19,6 +19,10 @@ config/icon="res://icon.png"
 AppManagerGo="*res://Scripts/MySystems/AppManager_GO.cs"
 Init="*res://Scripts/Base/Init.cs"
 
+[editor_plugins]
+
+enabled=PoolStringArray( "res://addons/behaviour_nodes/plugin.cfg" )
+
 [input]
 
 gm_up={
