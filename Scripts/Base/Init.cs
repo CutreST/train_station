@@ -25,8 +25,9 @@ namespace Base
         /// Loads the config of the game-window-whatever
         /// </summary>
         private void Loadconfig()
-        { 
+        {
             // set the window centered
+            MySystems.SystemManager.GetInstance(this);
             this.CenterWindow();
             MyConsole.IsOn = CONSOLE;
             //when finished, dispose the node, we don't need it

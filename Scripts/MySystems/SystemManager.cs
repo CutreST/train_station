@@ -43,6 +43,10 @@ namespace MySystems
             {
                 //neww system
                 _instance = new SystemManager();
+
+                // buscamos el nodo a ver
+                //_instance.NodeManager = node.GetTree().Root.TryGetFromChild_Rec<AppManager_GO>();
+                
                 //new node
                 _instance.NodeManager = new AppManager_GO();
                 _instance.NodeManager.Name = "AppManager_Node";
@@ -65,6 +69,14 @@ namespace MySystems
         {
             this.MySystems = new Dictionary<Type, System_Base>();
             this.VisualSys = new Stack<VisualSystem_Base>();
+        }
+
+        public SystemManager(AppManager_GO go){
+            this.MySystems = new Dictionary<Type, System_Base>();
+            this.VisualSys = new Stack<VisualSystem_Base>();
+            this.NodeManager = go;
+            _instance = this;
+            this.Init();
         }
 
         public void Init()

@@ -30,7 +30,9 @@ namespace MySystems
         {
             GD.Print("Instance made to the tree");
             // call for the instance
-            this.Manager = SystemManager.GetInstance(this);
+            this.Manager = SystemManager.GetInstance(this); // problema, no funca bien
+            //this.Manager = new SystemManager(this);
+
         }
 
         public override void _Process(float delta)

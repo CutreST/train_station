@@ -54,7 +54,7 @@ namespace MySystems
 
             GO = DialDisp;
             DialDisp.DialogSystem = this;
-            // DialInput = new InputDialog(this);
+            DialInput = new InDialogInput();
             // MyInput = DialInput;
         }
 

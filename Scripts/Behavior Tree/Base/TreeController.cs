@@ -2,6 +2,8 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using Base.Interfaces;
+using MySystems;
 
 //using Entities.BehaviourTree.Loaders;
 
@@ -13,7 +15,7 @@ namespace BehaviorTree.Base
     /// There's work to do, i think. But it works for what we need.
     /// </remarks>
     /// </summary>
-    public class TreeController : Node
+    public class TreeController : Node, IPhysic
     {
         /// <summary>
         /// The root node.
@@ -55,6 +57,9 @@ namespace BehaviorTree.Base
                 base.SetPhysicsProcess(false);
                 GD.Print("Tree Controller says: There's no root node here");
             }
+
+            // metemso en el physic
+            SystemManager.GetInstance(this).currentSys.AddToPhysic(this);
         }
 
         public override void _ExitTree()
@@ -100,12 +105,11 @@ namespace BehaviorTree.Base
             }
 
             return state;
-        }
+        }        
 
-        public override void _PhysicsProcess(float delta)
+        public void MyPhysic(in float delta)
         {
             _currentNode.Tick(this);
         }
- 
     }
 }
