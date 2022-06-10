@@ -19,7 +19,7 @@ namespace BehaviorTree.Base
         
         public States NodeState { get; set; }
 
-        public void InitNode(in TreeController controller)
+        public virtual void InitNode(in TreeController controller)
         {
             if(base.GetChildCount() == 0){
                 return;
