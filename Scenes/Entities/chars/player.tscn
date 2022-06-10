@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://icon.png" type="Texture" id=1]
 [ext_resource path="res://Scripts/Entity/Entity.cs" type="Script" id=2]
@@ -9,6 +9,8 @@
 [ext_resource path="res://Scripts/Behavior Tree/InputNodes/GetInput.cs" type="Script" id=7]
 [ext_resource path="res://Scripts/Behavior Tree/InputNodes/MoveInput.cs" type="Script" id=8]
 [ext_resource path="res://Scripts/Behavior Tree/Base/TreeController.cs" type="Script" id=9]
+[ext_resource path="res://Scripts/Behavior Tree/InputNodes/ActionInput.cs" type="Script" id=10]
+[ext_resource path="res://Scripts/Entity/Components/States/ActionState.cs" type="Script" id=11]
 
 [sub_resource type="RectangleShape2D" id=2]
 extents = Vector2( 32, 30.5 )
@@ -26,7 +28,7 @@ script = ExtResource( 3 )
 Speed = Vector2( 64, 64 )
 connectToOnMove = true
 
-[node name="Area2D" type="Area2D" parent="MovementComponent"]
+[node name="ActionComponent" type="Area2D" parent="MovementComponent"]
 position = Vector2( 64, 0 )
 collision_layer = 0
 collision_mask = 4
@@ -37,8 +39,9 @@ __meta__ = {
 }
 _separation = Vector2( 64, 64 )
 _connectToChangeDirection = true
+_conectToDoAction = true
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="MovementComponent/Area2D"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MovementComponent/ActionComponent"]
 position = Vector2( 0, 1.5 )
 shape = SubResource( 2 )
 __meta__ = {
@@ -58,8 +61,11 @@ __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="MoveState" type="Node2D" parent="."]
+[node name="MoveState" type="Node" parent="."]
 script = ExtResource( 5 )
+
+[node name="ActionState" type="Node" parent="."]
+script = ExtResource( 11 )
 
 [node name="BehaviourTree" type="Node2D" parent="."]
 script = ExtResource( 9 )
@@ -69,6 +75,9 @@ script = ExtResource( 6 )
 
 [node name="GetInput" type="Node" parent="BehaviourTree/B_Sequence"]
 script = ExtResource( 7 )
+
+[node name="ActionInput" type="Node" parent="BehaviourTree/B_Sequence"]
+script = ExtResource( 10 )
 
 [node name="MoveInput" type="Node" parent="BehaviourTree/B_Sequence"]
 script = ExtResource( 8 )

@@ -17,6 +17,9 @@ namespace Entities.Components
         [Export]
         private bool _connectToChangeDirection;
 
+        [Export]
+        private bool _conectToDoAction;
+
         private const string SIGNAL_BODY_ENTERED = "body_entered";
         private const string SIGNAL_BODY_EXITED = "body_exited";
 
@@ -48,7 +51,8 @@ namespace Entities.Components
             }
         }
 
-        private void OnChangeDirection(MoveState.Direction newDirection){
+        private void OnChangeDirection(MoveState.Direction newDirection)
+        {
             // primero centramos
             base.Position -= DirectionToVector(_currentDirection) * _separation;
 
@@ -63,21 +67,21 @@ namespace Entities.Components
             MoveState.Direction.DOWN => new Vector2(0, 1),
             MoveState.Direction.UP => new Vector2(0, -1),
             MoveState.Direction.LEFT => new Vector2(-1, 0),
-            MoveState.Direction.RIGHT => new Vector2(1,0),
-            _ => new Vector2(0,0),
+            MoveState.Direction.RIGHT => new Vector2(1, 0),
+            _ => new Vector2(0, 0),
         };
 
-
-        #endregion
-
-
-        public void DoAction()
+        private void OnDoAction()
         {
             if (_actionable != null)
             {
                 _actionable.DoAction(this.MyEntity);
             }
         }
+
+
+        #endregion
+
 
         public void OnAwake()
         {
@@ -89,9 +93,16 @@ namespace Entities.Components
             this.DisconnectToEnterBody();
             this.DisconnectToExitBody();
 
-            if(_connectToChangeDirection){
+            if (_connectToChangeDirection)
+            {
                 this.DisconnectToChangeDirection();
             }
+
+            if(_conectToDoAction){
+                this.DisconnectToDoAction();
+            }
+
+            _actionable = null;
         }
 
         public void OnStart()
@@ -99,8 +110,13 @@ namespace Entities.Components
             this.ConnectToEnterBody();
             this.ConnectToExitBody();
 
-            if(_connectToChangeDirection){
+            if (_connectToChangeDirection)
+            {
                 this.ConnectToChangeDirection();
+            }
+
+            if(_conectToDoAction){
+                this.ConnectToDoAction();
             }
         }
 
@@ -136,9 +152,11 @@ namespace Entities.Components
             Messages.Print("Signal Connected: " + conn.ToString());
         }
 
-        private void ConnectToChangeDirection(){
+        private void ConnectToChangeDirection()
+        {
             MoveState st;
-            if(this.MyEntity.TryGetIComponentNode<MoveState>(out st) == false){
+            if (this.MyEntity.TryGetIComponentNode<MoveState>(out st) == false)
+            {
                 Messages.Print("Move State Not Found for " + this.MyEntity.Name, Messages.MessageType.ERROR);
                 return;
             }
@@ -146,15 +164,41 @@ namespace Entities.Components
             st.SubrscribeToChangeDirection(this.OnChangeDirection);
         }
 
-        private void DisconnectToChangeDirection(){
+        private void DisconnectToChangeDirection()
+        {
             MoveState st;
-            if(this.MyEntity.TryGetIComponentNode<MoveState>(out st) == false){
-                Messages.Print("Move State Not Found for " + this.MyEntity.Name, Messages.MessageType.ERROR);
+            if (this.MyEntity.TryGetIComponentNode<MoveState>(out st) == false)
+            {
+                Messages.Print($"Move State Not Found for {this.MyEntity.Name}", Messages.MessageType.ERROR);
                 return;
             }
 
             st.UnSubscriteToChangeDirection(this.OnChangeDirection);
         }
+
+        private void ConnectToDoAction(){
+            ActionState st;
+            if(this.MyEntity.TryGetIComponentNode<ActionState>(out st) == false){
+                Messages.Print($"Action State Not Found for {this.MyEntity.Name}", Messages.MessageType.ERROR);
+                this._conectToDoAction = false;
+                return;
+            }
+
+            st.SubscriteToDoAction(this.OnDoAction);
+        }
+
+        private void DisconnectToDoAction(){
+            ActionState st;
+            if(this.MyEntity.TryGetIComponentNode<ActionState>(out st) == false){
+                Messages.Print($"Action State Not Found for {this.MyEntity.Name}", Messages.MessageType.ERROR);
+                return;
+            }
+
+            st.UnsubscriteToDoAction(this.OnDoAction);
+        }
+
+
+
         #endregion
 
 

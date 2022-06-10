@@ -9,7 +9,7 @@ namespace Entities.Components
         // super-chungo, podemos meter un super behaviour tree
 
         public void DoAction(in Entity entity){
-            Messages.Print("Action Done!");
+            Messages.Print($"an action was done by {entity.Name}");
         }
 
     }
