@@ -11,7 +11,7 @@ namespace MySystems.Inputs{
         public override void GetInputs()
         {
             IsNext = false;
-            
+
             if(Input.IsActionJustPressed(DIAL_NAME)){
                 IsNext = true;
             }

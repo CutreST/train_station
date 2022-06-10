@@ -60,7 +60,7 @@ namespace MySystems
 
         public override void MyUpdate(in float delta)
         {
-            //DialInput.GetInput();
+            DialInput.GetInputs();
             base.MyUpdate(delta);
         }
 
