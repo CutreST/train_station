@@ -6,7 +6,7 @@ namespace BehaviorTree.Base
     /// <summary>
     /// The possible states of a node 
     /// </summary>
-    public enum States : byte { FAILURE, SUCCESS, RUNNING, INOPERATIVE }
+    public enum States : byte { FAILURE, SUCCESS, RUNNING, INOPERATIVE, PENDING_SUCCESS }
     
     /// <summary>
     /// Interface for all the behaviour nodes.

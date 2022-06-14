@@ -22,22 +22,33 @@ namespace BehaviorTree.Base
         /// </summary>
         private IBehaviorNode _root;
 
-        public IBehaviorNode Root{
+        public IBehaviorNode Root
+        {
             get => _root;
-            set{
-                if(_root != null){
-                    // cambiar esto, ya que se supone que vamos a interfaz y no hereda de node normal      
+            set
+            {
+                if (_root != null)
+                {                        
                     Node godotNode = _root as Node;
-                    if(godotNode != null){
+                    if (godotNode != null)
+                    {
                         godotNode.QueueFree();
-                    }else{
+                    }
+                    else
+                    {
                         GD.PrintErr("Tree Controller Says: the root is not a Godot node. Why?");
                     }
-                    
+
                 }
                 _root = value;
-                this.InitRoot();
-                GD.Print("New root on Behaviour Tree");
+                _currentNode = _root;
+
+                if (_root != null)
+                {
+                    this.InitRoot();
+                    Messages.Print("New root on Behaviour Tree");
+                }
+
             }
         }
 
@@ -47,24 +58,23 @@ namespace BehaviorTree.Base
         /// </summary>
         private IBehaviorNode _currentNode;
 
-        private Stack<IBehaviorNode> _nodeStack;
-
         #region Godot MEthods
         public override void _Ready()
         {
             // no root, no node, no error this way
-            if(this.TrySetRoot() == false){
+            if (this.TrySetRoot() == false)
+            {
                 base.SetPhysicsProcess(false);
                 GD.Print("Tree Controller says: There's no root node here");
             }
 
             // metemso en el physic
-            SystemManager.GetInstance(this).currentSys.AddToPhysic(this);
+            this.ActivateTree();
         }
 
         public override void _ExitTree()
         {
-            
+
         }
         #endregion
 
@@ -76,7 +86,8 @@ namespace BehaviorTree.Base
         private bool TrySetRoot()
         {
             _root = base.GetChild(0) as IBehaviorNode;
-            if(_root == null){
+            if (_root == null)
+            {
                 return false;
             }
 
@@ -84,12 +95,13 @@ namespace BehaviorTree.Base
             return true;
         }
 
-        private void InitRoot(){
+        private void InitRoot()
+        {
             _root.InitNode(this);
-            EnterNode(_root);
             _currentNode = _root;
         }
 
+        [Obsolete]
         public void EnterNode(in IBehaviorNode node)
         {
             //_currentNode = node;                      
@@ -97,19 +109,32 @@ namespace BehaviorTree.Base
 
         Queue<IBehaviorNode> Q;
 
-        public States ExitNode(in IBehaviorNode node, in States state){
+        public States ExitNode(in IBehaviorNode node, in States state)
+        {
             node.NodeState = state;
 
-            if(node.NodeState == States.RUNNING){
+            if (node.NodeState == States.RUNNING)
+            {
                 _currentNode = node;
             }
 
             return state;
-        }        
+        }
 
         public void MyPhysic(in float delta)
         {
             _currentNode.Tick(this);
+        }
+
+        public void DisableTree()
+        {
+            SystemManager.GetInstance(this).currentSys.RemoveFromPhysic(this);
+        }
+
+        public void ActivateTree()
+        {
+            // metemso en el physic
+            SystemManager.GetInstance(this).currentSys.AddToPhysic(this);
         }
     }
 }

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<full_Dial xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <dialogs>
+        <dial_group id="first_test">
+            <dial id="welcome">
+                <sent>There was nothing inside his head.</sent>
+                <sent>At some point, he began to search for that missing piece that he believed he lacked.</sent>
+                <sent>So he made his luggage, he went out and start his adventure.</sent>
+            </dial>
+            <dial id="middle">
+                <sent>This is a sentence to test, nothing more, nothing less.</sent>
+                <sent>So don't expect good writing, touching characters and something that will change your life...</sent>
+                <sent>Maybe it will change your life, for worse...</sent>
+            </dial>
+            <dial id="end">
+                <sent>Nah, the end. I'm really tired of writing and trying to be funny.</sent>
+                <sent>At some point, not far in the future, I will make an app to write all of this f**ng text.</sent>
+                <sent>It is really something, you know?</sent>
+            </dial>
+
+        </dial_group>
+    </dialogs>
+
+</full_Dial>

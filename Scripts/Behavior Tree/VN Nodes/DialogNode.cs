@@ -3,7 +3,7 @@ using MySystems;
 using BehaviorTree.Base;
 using System;
 
-namespace Entities.BehaviourTree.VN_Nodes
+namespace BehaviorTree.VN_Nodes
 {
 
     public class DialogNode : Node, IBehaviorNode
@@ -14,37 +14,65 @@ namespace Entities.BehaviourTree.VN_Nodes
         [Export]
         private MySystems.LoadXML.TextType TO_LOAD;
 
+        [Export]
+        private readonly string GROUP_ID;
+
         private string text;
 
         public States NodeState { get; set; }
 
+        private TreeController cont;
+
         public void InitNode(in TreeController controller)
         {
             //cargamos mierdas
-            //text = MySystems.LoadXML.LoadXmlElement(controller.Root.Name, DIAL_ID, TO_LOAD);
+            text = MySystems.LoadXML.LoadXmlElement(GROUP_ID, DIAL_ID, TO_LOAD);
             Messages.Print("Initialized " + base.Name);
         }
 
-       
+
         public States Tick(in TreeController controller)
         {
             //throw new NotImplementedException();
 
             Messages.Print("Tick on " + base.Name);
-            
-            if(NodeState == States.RUNNING){
-                controller.ExitNode(this, States.SUCCESS);
-            }else{
-                controller.ExitNode(this, States.RUNNING);
+            DialogSystem dial;
 
-                DialogSystem dial;
-                if(SystemManager.GetInstance(this).TryGetSystem<DialogSystem>(out dial, true)){
-                    dial.DisplayDialog(text);
-                }
-
+            if (NodeState == States.PENDING_SUCCESS)
+            {
+                SystemManager.GetInstance(this).TryGetSystem<DialogSystem>(out dial, true);
+                dial.UnsubscriteOnEndText(this.OnExitText);
+                Messages.Print("Pending done");
+                return cont.ExitNode(this, States.SUCCESS);
             }
+
+            if (SystemManager.GetInstance(this).TryGetSystem<DialogSystem>(out dial, true))
+            {
+                dial.DisplayDialog(text);
+
+                this.cont = controller;
+                this.OnEnterText(cont);
+                dial.SubscribeOnEndText(this.OnExitText);
+                cont.ExitNode(this, States.RUNNING);
+            }           
 
             return this.NodeState;
         }
+
+        private void OnEnterText(in TreeController controller)
+        {
+            controller.DisableTree();
+        }
+
+        private void OnExitText()
+        {
+            this.cont.ActivateTree();
+            this.cont.ExitNode(this, States.PENDING_SUCCESS);
+            Messages.Print("On exit text!!!");
+        }
+
+
+
+
     }
 }

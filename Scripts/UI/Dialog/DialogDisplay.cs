@@ -3,6 +3,7 @@ using Base.Interfaces;
 using System;
 using MySystems;
 using System.Text;
+using System.Collections.Generic;
 
 /// <summary>
 /// Group for all UI dialog related
@@ -18,7 +19,7 @@ namespace UI.Dialog
     /// <summary>
     /// Display for the dialog.
     /// </summary>
-    public class DialogDisplay : Control, IUpdate
+    public class DialogDisplay : Control, IPhysic
     {
         /// <summary>
         /// default lable name
@@ -67,7 +68,9 @@ namespace UI.Dialog
         /// Status of the current dialog sentence
         /// </summary>
         public enum Status : byte { RUNNING, FINISHED, SHOWING, WAITING }
-        public Status DialStatus { get; private set; }
+        public Status DialStatus { get; set; }
+
+        private HashSet<Action> onEndActions;
 
         public override void _EnterTree()
         {
@@ -77,6 +80,7 @@ namespace UI.Dialog
             TextToDisplay = new StringBuilder();
             lbl_dial = this.TryGetFromChild_Rec<RichTextLabel>(LBL_DIAL_NAME);
             //this.PutTextToDisplay("La [color=green]señorita caquita[/color] era famosa por esos lares.\n La llamaban fea, a saber por qué.\n Quizás estaba fuera de sí.\n");
+            onEndActions = new HashSet<Action>();
         }
 
         /// <summary>
@@ -88,7 +92,7 @@ namespace UI.Dialog
             SystemManager man = SystemManager.GetInstance(this);
             man.TryGetSystem<DialogSystem>(out temp, true);
             DialogSystem = temp;
-            DialogSystem.AddToUpdate(this);
+            DialogSystem.AddToPhysic(this);
             man.AddToStack(DialogSystem);
         }
 
@@ -103,10 +107,9 @@ namespace UI.Dialog
                 DialStatus = Status.FINISHED;
             else
                 DialStatus = Status.WAITING;
-
         }
 
-        public void MyUpdate(in float delta)
+        public void MyPhysic(in float delta)
         {
             //if there's input
             if (DialogSystem.DialInput.IsNext)
@@ -129,7 +132,9 @@ namespace UI.Dialog
                         base.Hide();
                         TextToDisplay.Clear();
                         TextToShow.Clear();
+                        lbl_dial.BbcodeText = "";
                         Messages.Print("Removed?" + DialogSystem.MyManager.RemoveFromStack(DialogSystem));
+                        this.OnEndText();
                         break;
                 }
             }
@@ -193,6 +198,24 @@ namespace UI.Dialog
             TextToDisplay.Append(text);
             index = 0;
             DialStatus = Status.RUNNING;
+        }
+
+        public void OnEndText(){
+            foreach(Action func in onEndActions){
+                func();
+            }
+        }
+
+        public void SubscribeOnEndText(Action func){
+            this.onEndActions.Add(func);
+        }
+
+        public void UnsubscriteOnEndText(Action func){
+            this.onEndActions.Remove(func);
+        }
+
+        public void ClearEvents(){
+            this.onEndActions.Clear();
         }
     }
 }
